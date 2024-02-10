@@ -1,5 +1,8 @@
-import { forwardRef, useImperativeHandle, useRef } from 'react';
-// import { createPortal } from 'react-dom';
+import { forwardRef, useImperativeHandle, useRef } from 'react'; // this libarary works on every react app even react native
+// createPortal used to change the position of component in the DOM
+// example before use Portal dialog apper in the section and should appear in the body tag 
+// since overlay appear in top of entire page
+import { createPortal } from 'react-dom'; // this library used to interact with Dom and manuplate it
 
 const ResultModal = forwardRef(function ResultModal({ targetTime, remainingTime, onReset }, ref) {
     const dialog = useRef();
@@ -16,7 +19,7 @@ const ResultModal = forwardRef(function ResultModal({ targetTime, remainingTime,
         };
     });
 
-    return (
+    return createPortal(
         <dialog ref={dialog} className="result-modal">
             {userLost && <h2>You lost</h2>}
             {!userLost && <h2>Your Score: {score}</h2>}
@@ -30,7 +33,8 @@ const ResultModal = forwardRef(function ResultModal({ targetTime, remainingTime,
             <form method="dialog" onSubmit={onReset}>
                 <button>Close</button>
             </form>
-        </dialog>
+        </dialog>,
+        document.getElementById('modal')
     );
 });
 
