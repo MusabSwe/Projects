@@ -7,8 +7,34 @@ import SelectedProject from "./selectedProject.jsx";
 function App() {
   const [projectState, setProjectState] = useState({
     selectedProjectId: undefined,
-    projects: []
+    projects: [],
+    tasks: []
   });
+
+  function handleAddTask(task) {
+    setProjectState(prevState => {
+      const newTask = {
+        text: task,
+        projectId: prevState.selectedProjectId,
+        id: Math.random()
+      }
+      return {
+        ...prevState,
+        tasks: [newTask, ...prevState.tasks]
+      }
+    })
+  }
+
+  function handleDeleteTask(id) {
+    setProjectState((prevState) => {
+      return {
+        ...prevState,
+        tasks: prevState.tasks.filter((t) => t.id !== id)
+      };
+    })
+  }
+
+
   function handlleStartAddProject() {
     setProjectState((prevState) => {
       return {
@@ -52,9 +78,19 @@ function App() {
     })
   }
 
+  function handleDeleteProject() {
+    setProjectState((prevState) => {
+      return {
+        ...prevState,
+        selectedProjectId: undefined,
+        projects: prevState.projects.filter((p) => p.id !== prevState.selectedProjectId)
+      };
+    })
+  }
+
   const selectedProject = projectState.projects.find(p => p.id === projectState.selectedProjectId);
 
-  let content = <SelectedProject project={selectedProject} />;
+  let content = <SelectedProject project={selectedProject} onDelete={handleDeleteProject} onAddTask={handleAddTask} onDeleteTask={handleDeleteTask} tasks={projectState.tasks} />;
 
   if (projectState.selectedProjectId === null) {
     content = <NewProject onAdd={handleAddProject} onCancel={handleCancelAddProject} />
@@ -64,7 +100,12 @@ function App() {
 
   return (
     <main className="h-screen my-8 flex gap-8">
-      <ProjectsSidebar onStartAddProject={handlleStartAddProject} projects={projectState.projects} onSelectProject={handleSelectedProject} />
+      <ProjectsSidebar
+        onStartAddProject={handlleStartAddProject}
+        projects={projectState.projects}
+        onSelectProject={handleSelectedProject}
+        selectedProjectId={projectState.selectedProjectId}
+      />
       {content}
     </main>
   );
