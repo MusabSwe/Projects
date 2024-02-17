@@ -1,9 +1,9 @@
 import { useState } from 'react';
-
+import Product from "./components/Product.jsx";
 import Header from './components/Header.jsx';
 import Shop from './components/Shop.jsx';
 import { DUMMY_PRODUCTS } from './dummy-products.js';
-
+import { CartContext } from './store/shopping-cart-context.jsx';
 function App() {
   const [shoppingCart, setShoppingCart] = useState({
     items: [],
@@ -65,14 +65,27 @@ function App() {
     });
   }
 
+  const ctxValue = {
+    // shoppingCart state in app.js above code
+    items: shoppingCart.items,
+    // handleAddItemToCart function implemented above in App.js  
+    // to benefit from state
+    addItemToCart: handleAddItemToCart
+  }
   return (
-    <>
+    <CartContext.Provider value={ctxValue}>
       <Header
         cart={shoppingCart}
         onUpdateCartItemQuantity={handleUpdateCartItemQuantity}
       />
-      <Shop onAddItemToCart={handleAddItemToCart} />
-    </>
+      <Shop>
+        {DUMMY_PRODUCTS.map((product) => (
+          <li key={product.id}>
+            <Product {...product} onAddToCart={handleAddItemToCart} />
+          </li>
+        ))}
+      </Shop>
+    </CartContext.Provider>
   );
 }
 
