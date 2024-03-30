@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 import Places from './components/Places.jsx';
 import { AVAILABLE_PLACES } from './data.js';
@@ -12,13 +12,14 @@ import { sortPlacesByDistance } from './loc.js';
 // when refres page or when run the wep app
 // only runs once
 const storedIds = JSON.parse(localStorage.getItem('selectedPlaces', JSON.stringify([]))) || [];
-const storedPlaces = storedIds.map((id) => 
+const storedPlaces = storedIds.map((id) =>
   AVAILABLE_PLACES.find((place) => place.id === id)
 );
 
 console.log("storedPlaces: ", storedPlaces);
 function App() {
-  const modal = useRef();
+  // const modal = useRef();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const selectedPlace = useRef();
   const [pickedPlaces, setPickedPlaces] = useState(storedPlaces);
   const [availablePlaces, setAvailablePlaces] = useState([]);
@@ -42,12 +43,12 @@ function App() {
 
 
   function handleStartRemovePlace(id) {
-    modal.current.open();
+    setModalIsOpen(true);
     selectedPlace.current = id;
   }
 
   function handleStopRemovePlace() {
-    modal.current.close();
+    setModalIsOpen(false);
   }
 
   function handleSelectPlace(id) {
@@ -67,24 +68,26 @@ function App() {
     }
 
   }
+  // is used to only create function only once not every time re-executed
+  const handleRemovePlace = useCallback(function handleRemovePlace() {
+      setPickedPlaces((prevPickedPlaces) =>
+        prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
+      );
+      setModalIsOpen(false);
+      const storedIds = JSON.parse(localStorage.getItem('selectedPlaces', JSON.stringify([]))) || [];
 
-  function handleRemovePlace() {
-    setPickedPlaces((prevPickedPlaces) =>
-      prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
-    );
-    modal.current.close();
-    const storedIds = JSON.parse(localStorage.getItem('selectedPlaces', JSON.stringify([]))) || [];
+      localStorage.setItem('selectedPlaces', JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current)))
+    }, []);
 
-    localStorage.setItem('selectedPlaces', JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current)))
-  }
 
   return (
     <>
-      <Modal ref={modal}>
+      <Modal open={modalIsOpen} onClose={handleStopRemovePlace}>
         <DeleteConfirmation
           onCancel={handleStopRemovePlace}
           onConfirm={handleRemovePlace}
         />
+
       </Modal>
 
       <header>
