@@ -5,6 +5,7 @@ import Modal from './components/Modal.jsx';
 import DeleteConfirmation from './components/DeleteConfirmation.jsx';
 import logoImg from './assets/logo.png';
 import AvailablePlaces from './components/AvailablePlaces.jsx';
+import Test from './components/test.jsx';
 
 function App() {
   const selectedPlace = useRef();
@@ -68,6 +69,7 @@ function App() {
         />
 
         <AvailablePlaces onSelectPlace={handleSelectPlace} />
+        <Test />
       </main>
     </>
   );
