@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Places from './Places.jsx';
 import Error from './Error.jsx';
-
+import { sortPlacesByDistance } from '../loc.js';
 // const places = localStorage.getItem('places'); // we can access data immedatily synchronslly 
 export default function AvailablePlaces({ onSelectPlace }) {
   const [availablePlaces, setAvailablePlaces] = useState([]);
@@ -22,13 +22,20 @@ export default function AvailablePlaces({ onSelectPlace }) {
         // if it is not inside a try catch the app will crash
         throw new Error('Faild to fetch places');
       }
-      setAvailablePlaces(responseData.places);
+      navigator.geolocation.getCurrentPosition((position) => {
+        const sortedPlaces = sortPlacesByDistance(responseData.places, position.coords.latitude, position.coords.longitude)
+        setAvailablePlaces(sortedPlaces);
+        // we add here inside navigator since can not accept await and its type a callback
+        // so we add inside callback until its finish then call
+        setIsLoading(false);
+      })
+
     } catch (error) {
       // result of error is an object
       setError(error);
+      setIsLoading(false);
     }
-    // out of try catch since in catch will call or in try will call 
-    setIsLoading(false);
+    
   }
 
   useEffect(() => {
