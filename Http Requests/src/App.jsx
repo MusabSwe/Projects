@@ -7,12 +7,14 @@ import logoImg from './assets/logo.png';
 import AvailablePlaces from './components/AvailablePlaces.jsx';
 import Test from './components/test.jsx';
 import { updateUserPlaces } from './http.js';
+import Error from './components/Error.jsx';
 function App() {
   const selectedPlace = useRef();
 
   const [userPlaces, setUserPlaces] = useState([]);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [errorOnUpdatePlace, setErrorOnUpdatePlace] = useState();
 
   function handleStartRemovePlace(place) {
     setModalIsOpen(true);
@@ -34,10 +36,12 @@ function App() {
       return [selectedPlace, ...prevPickedPlaces];
     });
     try {
-      const res = await updateUserPlaces({ places: [selectedPlace, ...userPlaces] });
-      console.log('res: ', res);
+      await updateUserPlaces({ places: [selectedPlace, ...userPlaces] });
     } catch (e) {
-      console.log('e: ', e);
+
+      setUserPlaces(userPlaces); // will take old value before update the selected place
+      setErrorOnUpdatePlace(e?.message ? e?.message : 'Fail to update place');
+
     }
   }
 
@@ -45,12 +49,32 @@ function App() {
     setUserPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current.id)
     );
+    try {
+      await updateUserPlaces({ places: userPlaces.filter((place) => place.id !== selectedPlace.current.id) });
+    } catch (e) {
+      setUserPlaces(userPlaces); // roll back will take old value before update the selected place
+      setErrorOnUpdatePlace(e?.message ? e?.message : 'Fail to remove place');
+
+    }
 
     setModalIsOpen(false);
-  }, []);
+  }, [userPlaces]);
+
+  const handleErrorUpdatePlace = () => {
+    setErrorOnUpdatePlace(null);
+  }
 
   return (
     <>
+      <Modal open={errorOnUpdatePlace} onClose={handleErrorUpdatePlace}>
+        {errorOnUpdatePlace && <Error
+          title="an error occurred!"
+          message={errorOnUpdatePlace}
+          onConfirm={handleErrorUpdatePlace}
+        >
+        </Error>
+        }
+      </Modal>
       <Modal open={modalIsOpen} onClose={handleStopRemovePlace}>
         <DeleteConfirmation
           onCancel={handleStopRemovePlace}
