@@ -21,5 +21,5 @@ export function useFetch(fetchFn, initialValue) {
     }, [fetchFn])
 
     // states
-    return { isLoading, data, error }
+    return { isLoading, data, setData, error }
 }
