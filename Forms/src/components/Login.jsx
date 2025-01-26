@@ -1,21 +1,27 @@
+import { useRef } from "react";
 import { useState } from "react";
 
 export default function Login() {
-  const [formVals, setFormVals] = useState({
-    email: '',
-    passwaord: ''
-  });
+  // const [formVals, setFormVals] = useState({
+  //   email: '',
+  //   passwaord: ''
+  // });
+  const email = useRef();
+  const password = useRef();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('handleSubmit', formVals);
+    console.log('handleSubmit', email.current.value, password.current.value);
+    //  to reset after submit
+    email.current.value = '';
   }
 
-  const handleInputChange = (identifier, e) => {
-    setFormVals((preValue) => ({
-      ...preValue,
-      [identifier]: e.target.value
-    }))
-  }
+  // const handleInputChange = (identifier, e) => {
+  //   setFormVals((preValue) => ({
+  //     ...preValue,
+  //     [identifier]: e.target.value
+  //   }))
+  // }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -28,8 +34,9 @@ export default function Login() {
             id="email"
             type="email"
             name="email"
-            value={formVals.email}
-            onChange={(e) => handleInputChange('email', e)}
+            // value={formVals.email}
+            // onChange={(e) => handleInputChange('email', e)}
+            ref={email}
           />
         </div>
 
@@ -39,8 +46,9 @@ export default function Login() {
             id="password"
             type="password"
             name="password"
-            value={formVals.passwaord}
-            onChange={(e) => handleInputChange('passwaord', e)}
+            // value={formVals.passwaord}
+            // onChange={(e) => handleInputChange('passwaord', e)}
+            ref={password}
           />
         </div>
       </div>
