@@ -1,22 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Places from './Places.jsx';
 import Error from './Error.jsx';
 import { sortPlacesByDistance } from '../loc.js';
 import { fetchAvailablePlaces } from '../http.js'
 import { useFetch } from '../hooks/useFetch.js';
 
-// navigator.geolocation.getCurrentPosition((position) => {
-//   const sortedPlaces = sortPlacesByDistance(places, position.coords.latitude, position.coords.longitude)
-//   setAvailablePlaces(sortedPlaces);
-//   // we add here inside navigator since can not accept await and its type a callback
-//   // so we add inside callback until its finish then call
-//   setIsLoading(false);
-// })
 
-// const places = localStorage.getItem('places'); // we can access data immedatily synchronslly 
+
+async function fetchSortedPlaces() {
+  const places = await fetchAvailablePlaces();
+  // we add promise since the function is async and accespt only promise
+  // so below convert to promise and provided by browser 
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const sortedPlaces = sortPlacesByDistance(places, position.coords.latitude, position.coords.longitude)
+      resolve(sortedPlaces);
+    })
+  })
+}
+
 export default function AvailablePlaces({ onSelectPlace }) {
 
-  const { data: availablePlaces, error, isLoading, setData: setAvailablePlaces } = useFetch(fetchAvailablePlaces, [])
+  const { data: availablePlaces, error, isLoading } = useFetch(fetchSortedPlaces, [])
 
 
   if (error) {
