@@ -1,3 +1,5 @@
+import React from 'react';
+
 const Error = ({ title, message, onConfirm }) => {
     return (
         <div className="error">

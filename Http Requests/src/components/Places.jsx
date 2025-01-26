@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function Places({ title, places, fallbackText, onSelectPlace, loadingText, isLoading }) {
   console.log(places);
   return (
