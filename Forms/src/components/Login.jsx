@@ -12,7 +12,15 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('handleSubmit', email.current.value, password.current.value);
-    //  to reset after submit
+
+    // to resest state after submissition
+    // setFormVals({
+    //     email: '',
+    //     passwaord: ''
+    // })
+
+    //  to reset after submit in refs
+    // this way is a bad practice
     email.current.value = '';
   }
 

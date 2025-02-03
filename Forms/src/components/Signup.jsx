@@ -16,6 +16,8 @@ export default function Signup() {
     // console.log(acquisition); // output array of strings within array the checked box --> ["google","friend"]
     // combine all form data into a single object
     form.acquisition = acquisition
+    // to reset form after submitting
+    e.target.reset();
   }
   return (
     <form onSubmit={handleSubmit}>
